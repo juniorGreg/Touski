@@ -1,0 +1,61 @@
+body > main, header, footer {
+  margin-top: 2em;
+  padding: 1em;
+  font-family: sans-serif;
+  text-align: center;
+  max-width: 80%;
+  margin-right: auto;
+  margin-left: auto;
+  background-color: lightgrey;
+  border-radius: 1em;
+}
+
+section.form {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  align-items: center;
+  justify-content: center;
+}
+
+label {
+  flex-grow: 1;
+}
+
+input, button {
+  border-radius: 1em;
+  border-color: black;
+  padding: 0.5em;
+}
+
+input {
+  flex-grow: 5;
+}
+
+button {
+  flex-grow: 1;
+  cursor: pointer;
+}
+
+ul 
+{
+  list-style-type: circle;
+  li {
+    margin: 0.5em;
+    
+    animation-name: accordion;
+    animation-duration: 1s;
+  }
+}
+
+@keyframes accordion {
+  from {
+    transform: scaleY(0)
+  }
+  to {
+    transform: scaleY(1)
+  }
+}
+
+

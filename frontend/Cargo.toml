@@ -1,0 +1,12 @@
+[package]
+name = "touski-frontend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+yew = "0.19"
+web-sys = "0.3.59"
+gloo-net = { version = "0.2.4", features = ["http","json"] }
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+futures = "0.3"
