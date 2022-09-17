@@ -46,13 +46,22 @@ impl Component for App {
         println!("search");
       },
       TouskiEvent::GetIngredientsHint => {
-         ctx.link().send_future(async {
-            match get_ingredients_hint().await {
+        if let Some(input) = self.ingredient_input.cast::<InputElement>() {
+         let hint = input.value();
+
+         if hint.is_empty() {
+          return false;
+         }
+
+         ctx.link().send_future(async move {
+            match App::get_ingredients_hint(&hint).await {
               Ok(new_ingredient_hint) => TouskiEvent::SetIngredientsHint(new_ingredient_hint),
               Err(err) => TouskiEvent::ShowError(err),
             }
          });
-         return false;
+        }
+
+        return false;
       },
       TouskiEvent::SetIngredientsHint(new_ingredient_hint) => {
         self.ingredients_hint = new_ingredient_hint;
@@ -106,14 +115,19 @@ impl Component for App {
   }  
 }
 
-async fn get_ingredients_hint() -> Result<Vec<String>, Error> {
-  let resp = Request::get("/api/ingredients/").send().await.unwrap();
+impl App {
+  async fn get_ingredients_hint(hint: &str) -> Result<Vec<String>, Error> {
+    
+    let mut query = "/api/ingredients/".to_owned();
+    query.push_str(hint);
 
-  let ingredients_hint: Vec<String> = resp.json().await.unwrap();
+    let resp = Request::get(&query).send().await.unwrap();
+    
+    let ingredients_hint: Vec<String> = resp.json().await.unwrap();
 
-  Ok(ingredients_hint)    
+    Ok(ingredients_hint)    
+  }
 }
-
 fn main() {
   yew::start_app::<App>();
 }
