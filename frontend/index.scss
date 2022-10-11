@@ -36,6 +36,12 @@ input {
 button {
   flex-grow: 1;
   cursor: pointer;
+  
+  &:hover, &:focus {
+    filter: brightness(70%);
+  }
+
+  transition: filter 300ms;
 }
 
 ul 
