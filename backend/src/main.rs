@@ -1,5 +1,6 @@
 #[macro_use] extern crate rocket;
 use rocket::serde::{Serialize, json::Json};
+use rocket_db_pools::{sqlx, Database};
 
 #[get("/ingredients/<hint>")]
 fn ingredients(hint: &str) -> Json<Vec<String>> {
@@ -17,9 +18,14 @@ fn ingredients(hint: &str) -> Json<Vec<String>> {
     Json(ingredients)
 }
 
+#[derive(Database)]
+#[database("sqlx")]
+struct TouskiDb(sqlx::SqlitePool);
+
 #[launch]
 fn rocket() -> _ {
     rocket::build()
+    .attach(TouskiDb::init())
     .mount("/", routes![ingredients])
 }
 

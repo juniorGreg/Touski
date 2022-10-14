@@ -1,5 +1,4 @@
 use yew::prelude::*;
-use yew_router::prelude::*;
 use web_sys::HtmlInputElement as InputElement;
 use gloo_net::{ http::Request, Error };
 
@@ -120,9 +119,6 @@ impl Component for Index {
           </ul>
           <button onclick={on_search_random_recipe}>{ "Chercher une recette aléatoire" }</button>
         </main>
-        <footer>
-          { "© 2022" }
-        </footer>
       </>
     }
   }  

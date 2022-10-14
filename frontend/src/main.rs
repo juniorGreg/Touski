@@ -2,9 +2,12 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 use web_sys::HtmlInputElement as InputElement;
 use gloo_net::{ http::Request, Error };
+
 mod index;
+mod admin;
 
 use index::Index;
+use admin::Admin;
 
 #[derive(Clone, Routable, PartialEq)]
 enum Route {
@@ -12,23 +15,6 @@ enum Route {
   Index,
   #[at("/admin")]
   Admin,
-}
-
-pub enum TouskiEvent {
-  AddIngredient,
-  SearchRandomRecipe, 
-  GetIngredientsHint,
-  SetIngredientsHint(Vec<String>),
-  ShowError(Error)
-}
-
-#[function_component(Admin)]
-fn admin() -> Html {
-  html! {
-      <div>
-        <h1>{ "Admin" }</h1>
-      </div>
-  }
 }
 
 fn switch(routes: &Route) -> Html {
@@ -46,7 +32,10 @@ fn switch(routes: &Route) -> Html {
 fn app() -> Html {
   html! {
     <BrowserRouter>
-       <Switch<Route> render={Switch::render(switch)} /> 
+       <Switch<Route> render={Switch::render(switch)} />
+       <footer>
+          { "© 2022" }
+       </footer>
     </BrowserRouter>
   }
 }
