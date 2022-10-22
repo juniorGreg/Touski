@@ -1,9 +1,15 @@
 #[macro_use] extern crate rocket;
 use rocket::serde::{Serialize, json::Json};
-use rocket_db_pools::{sqlx, Database};
+use rocket::fairing::AdHoc;
+use rocket::serde::Deserialize;
+
+#[post("/ingredients/<ingredient>")]
+async fn add_ingredient(ingredient: &str) {
+  println!("Add {} to database", ingredient);
+}
 
 #[get("/ingredients/<hint>")]
-fn ingredients(hint: &str) -> Json<Vec<String>> {
+async fn get_ingredients(hint: &str) -> Json<Vec<String>> {
     let mut ingredients = vec!["tomate".to_owned(), 
                                "concombre".to_owned(), 
                                "radis".to_owned(), 
@@ -18,15 +24,10 @@ fn ingredients(hint: &str) -> Json<Vec<String>> {
     Json(ingredients)
 }
 
-#[derive(Database)]
-#[database("sqlx")]
-struct TouskiDb(sqlx::SqlitePool);
-
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-    .attach(TouskiDb::init())
-    .mount("/", routes![ingredients])
+    .mount("/", routes![get_ingredients, add_ingredient])
 }
 
 #[cfg(test)]
@@ -36,9 +37,19 @@ mod test {
   use rocket::http::Status;
 
   #[test]
-  fn test_ingredients() {
-    let client = Client::tracked(rocket()).expect("valid rokcet instance");
-    let mut response = client.get(uri!(super::ingredients("tom"))).dispatch();
-    assert_eq!(response.status(), Status::Ok)
+  fn test_get_ingredients() {
+    let client = Client::tracked(rocket()).expect("valid rocket instance");
+    let response = client.get(uri!(super::get_ingredients("tom"))).dispatch();
+    assert_eq!(response.status(), Status::Ok);
+    let ingredients = response.into_json::<Vec<String>> ();
+    println!("{:?}", ingredients);
+    assert!(ingredients.is_some());
+  }
+
+#[test]
+  fn test_add_ingredient() {
+    let client = Client::tracked(rocket()).expect("valid rocket instance");
+    let response = client.get(uri!(super::add_ingredient("tomate"))).dispatch();
+    assert_eq!(response.status(), Status::Ok);
   }
 }
