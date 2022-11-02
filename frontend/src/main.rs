@@ -28,10 +28,21 @@ fn switch(routes: &Route) -> Html {
   }
 }
 
+#[function_component(Nav)]
+fn nav() -> Html {
+  html!{
+    <nav>
+      <Link<Route> to={Route::Index}>{"Accueil"}</Link<Route>>
+      <Link<Route> to={Route::Admin}>{"Admin"}</Link<Route>>
+    </nav>
+  }
+}
+
 #[function_component(App)]
 fn app() -> Html {
   html! {
     <BrowserRouter>
+       <Nav />
        <Switch<Route> render={Switch::render(switch)} />
        <footer>
           { "© 2022" }

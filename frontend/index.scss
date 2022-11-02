@@ -1,3 +1,9 @@
+$background-color: lightgrey;
+
+body {
+  margin: 0;
+}
+
 body > main, header, footer {
   margin-top: 2em;
   padding: 1em;
@@ -6,7 +12,7 @@ body > main, header, footer {
   max-width: 80%;
   margin-right: auto;
   margin-left: auto;
-  background-color: lightgrey;
+  background-color: $background-color;
   border-radius: 1em;
 }
 
@@ -49,7 +55,6 @@ ul
   list-style-type: circle;
   li {
     margin: 0.5em;
-    
     animation-name: accordion;
     animation-duration: 1s;
   }
@@ -61,6 +66,33 @@ ul
   }
   to {
     transform: scaleY(1)
+  }
+}
+
+nav {
+  padding-left: 10%;
+  padding-right: 10%;
+  background-color: darken($background-color, 30%);
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  
+  gap: 1em;
+  display: flex;
+  justify-content: flex-end;
+
+  a {
+    $nav-link-color: white;
+    color: $nav-link-color;
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 300ms; 
+    &:hover, &:focus {
+      transform: scale(1.2, 1.2);
+    }
+
+    &:visited {
+      color: darken($nav-link-color, 10%);
+    }
   }
 }
 
