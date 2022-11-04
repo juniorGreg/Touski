@@ -1,7 +1,11 @@
 #[macro_use] extern crate rocket;
 use rocket::serde::{Serialize, json::Json, Deserialize};
 use rocket::State;
+
 use diesel::prelude::*;
+use diesel::r2d2::ConnectionManager;
+use diesel::r2d2::Pool;
+
 use std::sync::{Arc, Mutex};
 use dotenvy::dotenv;
 use std::env;
@@ -12,22 +16,22 @@ pub mod schema;
 use models::*;
 use crate::Ingredient;
 
-struct DieselConnection {
-  conn: Arc::<Mutex<PgConnection>>
-}
-
-fn connect_db() -> PgConnection {
+fn connect_db() -> Pool<ConnectionManager<PgConnection>> {
   dotenv().ok();
   let database_url= env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-  PgConnection::establish(&database_url)
-    .unwrap_or_else(|_| panic!("Error connection to {}", database_url))
+  let manager = ConnectionManager::<PgConnection>::new(database_url);
+  
+  Pool::builder()
+    .test_on_check_out(true)
+    .build(manager)
+    .expect("Could not build connection pool")
 }
   
 #[post("/ingredients/<title>")]
-async fn add_ingredient(title: &str, diesel_connection: &State<DieselConnection>) -> Json<Ingredient> {
+async fn add_ingredient(title: &str, diesel_connection: &State<Pool<ConnectionManager<PgConnection>>>) -> Json<Ingredient> {
   use crate::schema::ingredients;
 
-  let conn = &mut *diesel_connection.conn.lock().unwrap();
+  let conn = &mut diesel_connection.get().unwrap();
   let new_ingredient = NewIngredient { title };
 
   let ingredient = diesel::insert_into(ingredients::table)
@@ -39,13 +43,27 @@ async fn add_ingredient(title: &str, diesel_connection: &State<DieselConnection>
 }
 
 #[get("/ingredients/<hint>")]
-async fn get_ingredients(hint: &str, diesel_connection: &State<DieselConnection>) -> Json<Vec<String>> {
+async fn get_ingredients(hint: &str, diesel_connection: &State<Pool<ConnectionManager<PgConnection>>>) -> Json<Vec<String>> {
   use self::schema::ingredients::dsl::*;
 
-  let conn = &mut *diesel_connection.conn.lock().unwrap();
+  let conn = &mut diesel_connection.get().unwrap();
   let results = ingredients
     .select(title)
+    .filter(title.like(format!("{}%", hint)))
     .limit(5)
+    .load::<String>(conn)
+    .expect("Error loading ingredient");
+
+  Json(results)
+}
+
+#[get("/ingredients")]
+async fn get_all_ingredients(diesel_connection: &State<Pool<ConnectionManager<PgConnection>>>) -> Json<Vec<String>> {
+  use self::schema::ingredients::dsl::*;
+
+  let conn = &mut diesel_connection.get().unwrap();
+  let results = ingredients
+    .select(title)
     .load::<String>(conn)
     .expect("Error loading ingredient");
 
@@ -55,8 +73,8 @@ async fn get_ingredients(hint: &str, diesel_connection: &State<DieselConnection>
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-    .manage(DieselConnection { conn: Arc::new(Mutex::new(connect_db()))})
-    .mount("/", routes![get_ingredients, add_ingredient])
+    .manage(connect_db())
+    .mount("/", routes![get_ingredients, get_all_ingredients, add_ingredient])
 }
 
 #[cfg(test)]

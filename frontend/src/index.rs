@@ -28,17 +28,35 @@ impl Index {
 
     Ok(ingredients_hint)    
   }
+
+  async fn get_ingredients() -> Result<Vec<String>, Error> {
+    
+    let query = "/api/ingredients".to_owned();
+
+    let resp = Request::get(&query).send().await.unwrap();
+    
+    let ingredients_hint: Vec<String> = resp.json().await.unwrap();
+
+    Ok(ingredients_hint)    
+  }
 }
 
 impl Component for Index {
   type Message = TouskiEvent;
   type Properties = ();
 
-  fn create(_ctx: &Context<Self>) -> Self {
-    let ingredients_hint = vec!["patate".to_string(), "banane".to_string(), "papaye".to_string(), "anana".to_string(), "pitahaya".to_string()];
+  fn create(ctx: &Context<Self>) -> Self {
+     
+    ctx.link().send_future( async {
+      match Index::get_ingredients().await {
+        Ok(ingredients_hint) => TouskiEvent::SetIngredientsHint(ingredients_hint),
+        Err(err) => TouskiEvent::ShowError(err)
+      }
+    });
+    
     Self {
       ingredients_vec: Vec::new(),
-      ingredients_hint,
+      ingredients_hint: Vec::new(),
       ingredient_input: NodeRef::default()
     }
   }
