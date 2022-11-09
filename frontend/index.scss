@@ -23,24 +23,29 @@ section.form {
   gap: 0.5em;
   align-items: center;
   justify-content: center;
+
+  label {
+    flex-grow: 1;
+  }
+
+  input {
+    flex-grow: 5;
+  }
 }
 
-label {
-  flex-grow: 1;
-}
+main {
+  input, button {
+    border-radius: 1em;
+    border-color: black;
+    padding: 0.5em;
+  }
 
-input, button {
-  border-radius: 1em;
-  border-color: black;
-  padding: 0.5em;
-}
-
-input {
-  flex-grow: 5;
+  button {
+    flex-grow: 1;
+  }
 }
 
 button {
-  flex-grow: 1;
   cursor: pointer;
   
   &:hover, &:focus {
@@ -56,7 +61,7 @@ ul
   li {
     margin: 0.5em;
     animation-name: accordion;
-    animation-duration: 1s;
+    animation-duration: 300ms;
   }
 }
 
@@ -73,18 +78,21 @@ nav {
   padding-left: 10%;
   padding-right: 10%;
   background-color: darken($background-color, 30%);
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
-  
+  height: 2em;
   gap: 1em;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
 
+  $nav-link-color: white;
+  $nav-link-weight: 600;
+  
+  color: $nav-link-color;
+  font-weight: $nav-link-weight;
+  font-size: 15px;
+  
   a {
-    $nav-link-color: white;
-    color: $nav-link-color;
-    text-decoration: none;
-    font-weight: 600;
+   text-decoration: none;
     transition: transform 300ms; 
     &:hover, &:focus {
       transform: scale(1.2, 1.2);
@@ -92,6 +100,20 @@ nav {
 
     &:visited {
       color: darken($nav-link-color, 10%);
+    }
+  }
+
+  button {
+    height: 80%;
+    padding-right: 0.5em;
+    padding-left: 0.5em;
+    border-radius: 0.5em;
+    border-color: transparent;
+    
+    color: $nav-link-color;
+    font-weight: $nav-link-weight;
+    &.login {
+      background-color: green;
     }
   }
 }

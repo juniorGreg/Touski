@@ -5,17 +5,13 @@ use gloo_net::{ http::Request, Error };
 
 mod index;
 mod admin;
+mod nav;
+pub mod store;
 
 use index::Index;
 use admin::Admin;
+use nav::{Nav, Route};
 
-#[derive(Clone, Routable, PartialEq)]
-enum Route {
-  #[at("/")]
-  Index,
-  #[at("/admin")]
-  Admin,
-}
 
 fn switch(routes: &Route) -> Html {
   match routes {
@@ -28,15 +24,6 @@ fn switch(routes: &Route) -> Html {
   }
 }
 
-#[function_component(Nav)]
-fn nav() -> Html {
-  html!{
-    <nav>
-      <Link<Route> to={Route::Index}>{"Accueil"}</Link<Route>>
-      <Link<Route> to={Route::Admin}>{"Admin"}</Link<Route>>
-    </nav>
-  }
-}
 
 #[function_component(App)]
 fn app() -> Html {

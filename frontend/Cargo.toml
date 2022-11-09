@@ -6,8 +6,6 @@ edition = "2021"
 [dependencies]
 yew = "0.19"
 yew-router = "0.16"
+yewdux = "0.8"
 web-sys = "0.3.59"
 gloo-net = { version = "0.2.4", features = ["http","json"] }
-wasm-bindgen = "0.2"
-wasm-bindgen-futures = "0.4"
-futures = "0.3"

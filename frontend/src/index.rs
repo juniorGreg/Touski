@@ -80,6 +80,12 @@ impl Component for Index {
          let hint = input.value();
 
          if hint.is_empty() {
+           ctx.link().send_future(async move {
+              match Index::get_ingredients().await {
+                Ok(ingredients_hint) => TouskiEvent::SetIngredientsHint(ingredients_hint),
+                Err(err) => TouskiEvent::ShowError(err)
+              }
+            });
           return false;
          }
 
